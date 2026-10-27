@@ -24,9 +24,10 @@
 #include "totk_taa.h"
 #include <TargetConditionals.h>
 
-#if TARGET_OS_VISION
+#if TARGET_OS_VISION || DM_NVN_M3
 /* visionOS has no MetalFX temporal scaler: anti-aliasing stays off there (it is off by default everywhere, key 5). */
 int taa_enabled(void) { return 0; }
+int taa_effective(void) { return 0; }
 int taa_active(void) { return 0; }
 int taa_ready(void) { return 0; }
 void taa_set(int on) { (void)on; }
@@ -37,7 +38,7 @@ void taa_note_camera(const float *cam, int n) { (void)cam; (void)n; }
 id<MTLTexture> taa_encode(id<MTL4CommandBuffer> cb, id<MTLTexture> scene) { (void)cb; (void)scene; return nil; }
 id<MTLResidencySet> taa_residency(void) { return nil; }
 void taa_frame_end(void) {}
-void taa_stats(char *out, size_t n) { snprintf(out, n, "not available on visionOS"); }
+void taa_stats(char *out, size_t n) { snprintf(out, n, "not available on this platform"); }
 #else
 
 #define TLOG(...) do { fprintf(stderr, "[dm] [nvn-mtl] [taa] " __VA_ARGS__); fputc('\n', stderr); } while (0)

@@ -23,3 +23,7 @@ Fetched or linked at build time (not in this repository):
 | [hactool](https://github.com/SciresM/hactool) at `1d64a83` (with explicit private title-key-file hook), including its bundled mbedTLS | Base + update BKTR merge at build time only | ISC (hactool), Apache-2.0 (mbedTLS); see fetched source LICENSE files |
 | libopus (Homebrew), linked statically | Opus audio | BSD-3-Clause |
 | libvpx (Homebrew), linked statically | VP9 movies | BSD-3-Clause |
+
+## macOS 15 / Metal 3 compatibility layer
+
+`games/totk/third_party/d2r_gfx/gfx/nvn/m3_compat.{h,m}` and the Metal 3 API adaptations derive from [1918662410-ship-it/MacNativeGames](https://github.com/1918662410-ship-it/MacNativeGames/tree/f71ea7b56eb1f7064d5e753428cc6b05a124241b), under the MIT license (Copyright (c) 2026 MacNativeGames contributors; license text in this repository's LICENSE). The port is adapted to upstream `a8807a1`; the buffer registry growth fix and regression test were added on this branch.

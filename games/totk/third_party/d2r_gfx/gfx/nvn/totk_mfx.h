@@ -1,6 +1,7 @@
 // TOTK: MetalFX frame interpolation (not in D2R). See totk_mfx.m.
 #pragma once
 #import <Metal/Metal.h>
+#include "m3_compat.h"   // DM_NVN_M3：Metal 3 兼容层
 
 /* Frame interpolation modes (the settings panel; user 2026-10-25: 30+30, 40+40, 50+50, uncapped):
    MFX_30 / MFX_40 / MFX_50  the game renders 30 / 40 / 50 frames a second, MetalFX makes the frame between ("30+30" ...),
@@ -33,6 +34,7 @@ int mfx_frame_prepare(double frame_s);
 // Keep the returned resources alive until this command buffer's GPU completion.
 // Cached interpolators drop their public texture bindings after encoding.
 NSArray *mfx_frame_encode(id<MTL4CommandBuffer> cb, int slot, id<MTL4CounterHeap> heap, NSUInteger stamp);   // heap: timestamps at stamp / stamp+1 around MetalFX (may be nil)
+
 void mfx_note_gpu(double ms);   // GPU time of one interpolation, for the statistics line
 void mfx_frame_abort(void);
 id<MTLTexture> mfx_output(int slot);   // RGBA8Unorm view of the sRGB output, like the swapchain textures

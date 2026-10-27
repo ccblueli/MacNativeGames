@@ -1,3 +1,5 @@
+> **Experimental macOS 15 / Metal 3 branch:** opt in with `TOTK_M3=1`. See [build instructions and validation limits](docs/macos15-metal3.md). This revision is compiled, but not gameplay-verified.
+
 # MacNativeGames
 
 <p align="center"><b>A technical exploration: can a Nintendo Switch game's NVN graphics be ported to Metal?</b><br>

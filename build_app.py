@@ -280,8 +280,9 @@ def prerequisites(args):
     if platform.system() != 'Darwin' or platform.machine() != 'arm64':
         raise BuildError('needs a Mac with Apple silicon')
     major = int(platform.mac_ver()[0].split('.')[0] or 0)
-    if major < 26:
-        raise BuildError(f'needs macOS 26 or later (Metal 4); this is macOS {platform.mac_ver()[0]}')
+    minimum = 15 if os.environ.get('TOTK_M3') == '1' else 26
+    if major < minimum:
+        raise BuildError(f'needs macOS {minimum} or later; this is macOS {platform.mac_ver()[0]}')
     if subprocess.run(['xcrun', '--find', 'clang'], capture_output=True).returncode:
         raise BuildError('the Xcode command line tools are missing: xcode-select --install')
     # SPIRV-Cross is C++: without the SDK's libc++ headers the build stops much later at "'string' file not found" (#41)
@@ -1085,6 +1086,8 @@ def step_shader_libs(tree, logs, *, version='v0'):
 def build_launcher(tree, version, logs, env):
     """build/app-launcher: per game and version (runtime/game_version.h: the data folder, the log name, the backup of saves)."""
     defines = [] if version == 'v0' else [f'-DGAME_{version.upper()}=1'] if version.startswith('botw') else [f'-DTOTK_GAME_{version.upper()}=1']
+    if env.get('TOTK_M3') == '1':
+        defines += ['-DDM_NVN_M3=1', '-mmacosx-version-min=15.0']
     run(['xcrun', 'clang', '-fobjc-arc', '-O2', '-Wall', '-Ithird_party/d2r_gfx/gfx/nvn', '-Iruntime', *defines, 'app/launcher.m', '-framework', 'AppKit',
          '-o', 'build/app-launcher'], logs / 'launcher.log', cwd=tree, env=env)
 
@@ -1452,7 +1455,7 @@ def step_app(tree, out, logs, *, version="v0", game='totk'):
     place_data_bundle(data_bundle(tree, version, logs, bundle_id=bundle_id), tmp, res, version)
     info = dict(CFBundleDevelopmentRegion='en', CFBundleExecutable=executable, CFBundleIdentifier=bundle_id, CFBundleName=app_name,
                 CFBundleDisplayName=app_name, CFBundlePackageType='APPL', CFBundleShortVersionString=expected['display_version'],
-                CFBundleVersion=str(expected['version'] + 1), LSMinimumSystemVersion='26.0', NSHighResolutionCapable=True,
+                CFBundleVersion=str(expected['version'] + 1), LSMinimumSystemVersion=('15.0' if os.environ.get('TOTK_M3') == '1' else '26.0'), NSHighResolutionCapable=True,
                 LSApplicationCategoryType='public.app-category.action-games', LSSupportsGameMode=True,
                 GCSupportsControllerUserInteraction=True,
                 CFBundleLocalizations=list(GAME_LANGUAGES) + (['pt-BR'] if version in ('v143', 'botw190') else []))

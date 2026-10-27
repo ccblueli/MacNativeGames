@@ -72,6 +72,10 @@ class VisionOS(unittest.TestCase):
 
     @unittest.skipUnless(sys.platform == 'darwin' and shutil.which('xcrun'), 'requires macOS SDK')
     def test_unavailable_metalfx_modes_stay_off_even_when_requested_by_environment(self):
+        # These declarations are supplied by the Metal 4 SDK, even though the stub submits no GPU work.
+        sdk = subprocess.check_output(['xcrun', '--sdk', 'macosx', '--show-sdk-version'], text=True)
+        if int(sdk.split('.')[0]) < 26:
+            self.skipTest('requires macOS 26 SDK for Metal 4 declarations')
         # Exercise the visionOS branches on the host without launching a game or requiring a headset.
         nvn = ROOT/'games/totk/third_party/d2r_gfx/gfx/nvn'
         with tempfile.TemporaryDirectory() as d:

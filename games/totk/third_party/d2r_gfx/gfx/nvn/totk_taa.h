@@ -1,6 +1,7 @@
 // TOTK: MetalFX temporal anti-aliasing (TOTK_TAA=1; not in D2R). See totk_taa.m.
 #pragma once
 #import <Metal/Metal.h>
+#include "m3_compat.h"
 
 int taa_enabled(void);                         // on in the settings panel (what it shows)
 int taa_effective(void);                       // a frame has been anti-aliased

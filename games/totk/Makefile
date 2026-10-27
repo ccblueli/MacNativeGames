@@ -3,6 +3,14 @@ GFX_OBJECTS := $(addprefix build/gfx/,$(addsuffix .o,$(GFX_SRC)))
 NATIVE_OPT ?= -O2
 GFX_FLAGS := -std=gnu11 -Wno-error -Wno-unused-function -Wno-unused-parameter -fobjc-arc -Ithird_party/d2r_gfx/gfx/nvn/include
 
+# Use a separate --work directory for each backend; game binary names stay stable.
+ifeq ($(TOTK_M3),1)
+MACOS_MIN_M3 ?= 15.0
+NATIVE_OPT += -mmacosx-version-min=$(MACOS_MIN_M3) -DDM_NVN_M3=1
+GFX_FLAGS += -Ithird_party/d2r_gfx/gfx/nvn
+GFX_OBJECTS := $(addprefix build/gfx-m3/,$(addsuffix .o,$(GFX_SRC)))
+endif
+
 PY := .venv/bin/python
 # GPU work outside build/totk-native waits for the game slot too (the game binary takes it itself): one game or GPU
 # probe at a time, see scripts/dev/game_slot.py. TOTK_SLOT_OWNER (claude, codex ...) names who is waiting.
@@ -144,7 +152,7 @@ verify-boot: runtime
 
 GFX_HEADERS := $(wildcard third_party/d2r_gfx/gfx/nvn/*.h third_party/d2r_gfx/gfx/nvn/include/*.h third_party/d2r_gfx/host/*.h)
 
-build/gfx/%.o: % $(GFX_HEADERS) Makefile
+build/gfx/%.o build/gfx-m3/%.o: % $(GFX_HEADERS) Makefile
 	@mkdir -p "$(dir $@)"
 	xcrun clang $(NATIVE_OPT) -g -Wall -Wextra $(GFX_FLAGS) -c "$<" -o "$@"
 

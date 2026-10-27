@@ -30,11 +30,12 @@
 #define MLOG(...) do { fprintf(stderr, "[dm] [nvn-mtl] [mfx] " __VA_ARGS__); fputc('\n', stderr); } while (0)
 #define MDIE(...) do { MLOG("FATAL " __VA_ARGS__); abort(); } while (0)
 
-#if TARGET_OS_VISION
+#if TARGET_OS_VISION || DM_NVN_M3
 /* visionOS has no MetalFX frame interpolator. Keep every entry point off, including environment initialization. */
 int mfx_enabled(void) { return 0; }
-const char *mfx_mode_name(int mode) { return mode == MFX_OFF ? "off" : "not available on visionOS"; }
-void mfx_set(int mode) { if (mode) MLOG("frame interpolation is not available on visionOS"); }
+int mfx_requested(void) { return 0; }
+const char *mfx_mode_name(int mode) { return mode == MFX_OFF ? "off" : "not available on this platform"; }
+void mfx_set(int mode) { if (mode) MLOG("frame interpolation is not available on this platform"); }
 void mfx_set_mv_dyn(int on) { (void)on; }
 int mfx_latch(void) { return 0; }
 id<MTLTexture> mfx_scene_target(id<MTLDevice> dev, NSUInteger w, NSUInteger h, MTLPixelFormat format) { (void)dev; (void)w; (void)h; (void)format; return nil; }
@@ -48,7 +49,7 @@ NSArray *mfx_frame_encode(id<MTL4CommandBuffer> cb, int slot, id<MTL4CounterHeap
 void mfx_note_gpu(double ms) { (void)ms; }
 void mfx_frame_abort(void) {}
 id<MTLTexture> mfx_output(int slot) { (void)slot; return nil; }
-void mfx_stats(char *out, size_t n) { snprintf(out, n, "not available on visionOS"); }
+void mfx_stats(char *out, size_t n) { snprintf(out, n, "not available on this platform"); }
 void mfx_mv_log(void) {}
 int mfx_dump_due(void) { return 0; }
 void mfx_dump(long frame, id<MTLTexture> prev, id<MTLTexture> cur) { (void)frame; (void)prev; (void)cur; }
